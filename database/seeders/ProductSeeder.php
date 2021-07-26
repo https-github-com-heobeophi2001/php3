@@ -20,6 +20,7 @@ class ProductSeeder extends Seeder
             $data = [
                 'name' => $faker->name,
                 'price' => $faker->randomNumber(1, 6),
+                'image' => $faker->image,
                 'quantity' =>  $faker->randomNumber(6),
                 'category_id' => $faker->randomNumber(1, 9)
             ];

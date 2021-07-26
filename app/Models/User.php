@@ -20,6 +20,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'address',
+        'gender',
+        'role',
     ];
 
     /**
@@ -40,4 +43,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function invoice(){
+        return $this->hasMany(Invoice::class, 'user_id','id');
+    }
+    public function setPasswordAttribute($value) {
+        $hash = bcrypt($value);
+        $this->attributes['password'] = "$hash";
+    }
 }
