@@ -5,13 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\Admin\Category\CategoryRequest;
 class CategoryController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $listCate = Category::latest()->paginate(10);
+        if ($request->has('keyword') == true) { 
+            $keyword = $request->get('keyword');
+            $listCate = Category::where('name', 'LIKE', "%$keyword%")->paginate(10);
+        } else {
+            $listCate = Category::latest()->paginate(10);
+        }
         $listCate->load(['products']);
         return view('admin/categories/index', [
             'data' => $listCate
@@ -24,7 +30,7 @@ class CategoryController extends Controller
         return view('admin/categories/add');
     }
 
-    public function store()
+    public function store(CategoryRequest $request)
     {
         $data = request()->except('_token');
         $response = Category::create($data);

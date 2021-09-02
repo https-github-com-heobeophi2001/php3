@@ -1,0 +1,7 @@
+<div class="col-10">
+    @yield('contents')
+</div>
+@auth
+    <a href="{{ route('auth.logout') }}" class="btn btn-default">Logout</a>
+@endauth
+{{$data->password}}

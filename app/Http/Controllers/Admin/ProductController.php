@@ -9,11 +9,20 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $listProduct = Product::latest()->paginate(10);
+        $listProduct = Product::all();
+       
+
+        if ($request->has('keyword') == true) { 
+            $keyword = $request->get('keyword');
+            $listProduct = Product::where('name', 'LIKE', "%$keyword%")->paginate(10);
+        } else {
+            $listProduct = Product::latest()->paginate(10);
+        }
         $listProduct->load(['category']);
-        // dd($listProduct);
+        
         return view('admin/products/index', [
             'data' => $listProduct,
         ]);

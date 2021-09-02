@@ -3,69 +3,79 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use DB;
-use App\Http\Requests\Admin\User\UserRequests;
+use Illuminate\Http\Request;
+use App\Http\Requests\Admin\User\StoreRequest;
+use App\Http\Requests\Admin\User\UpdateRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
-    public function index(){
-    // Lấy ra toàn bộ các bản ghi trong bảng users
-    //$listUser = DB::table('users')->get();
-    $listUser = User::latest()->paginate(10);;
+    public function index(Request $request)
+    {
+        $listUser = User::all();
+        $listUser = User::latest()->paginate(10);
+        
+        if ($request->has('keyword') == true) {
+            $keyword = $request->get('keyword');
+            $listUser = User::where('name', 'LIKE', "%$keyword%")->get();
+        } else {
+            $listUser = User::all();
+        }
 
-    $listUser->load(['invoice']);
-    //$user = $listUser->first();
-    //dd($user->invoices()->count());
-    return view('admin/users/index', [
-        'data' => $listUser,
-    ]);
-    }
-    public function show(User $user){
-        $user = User::find($id);
-        return view('admin/users/show',[
-            'user' => $user,
+        $listUser->load(['invoices']);
+        return view('admin/users/index', [
+            'data' => $listUser,
         ]);
     }
-    public function create(){
+    public function show(User $user)
+    {
+        return view('admin/users/show' , ['user'=>$user]);
+    }
+    public function create()
+    {
+        
         return view('admin/users/create');
     }
-    public function store(UserRequests $request){
-        
-    //lấy toàn bộ dữ liệu gửi lên
-    $data = $request->except('_token');
-        $result = User::create($data);
-        return redirect()->route('admin.users.index', compact('result'));
+    public function store(StoreRequest $request)
+    {
+        $data = $request->except('_token');
+        User::create($data);
+
+        if($request->ajax() == true ){
+            return response()->json([
+                'status'=>200,
+                'message'=> 'ok'
+            ]);
+        }
+
+        return redirect()->route('admin.users.index');
     }
-    public function edit(Request $request,$id){
-        $data = DB::table('users')->find($id);
-        $data = User::find($id);
-        
-        return view('admin/users/edit', [
-            'data' => $data,
-        ]);
+    public function edit(User $user)
+    {
+        // dd($user);
+        return view('admin/users/edit', ['data' => $user]);
     }
-    public function update(Request $request,$id){
-        // nhận dữ liệu gửi lên & lưu vào db
-    $data = request()->except('_token');
-    $user = User::find($id);
-    $user->update($data);
-    //$user->name = $data['name'];
-    //$user->name = $data['email'];
-    //$user->name = $data['password'];
-    //$user->name = $data['gender'];
-    //$user->name = $data['address'];
+    public function update(UpdateRequest $request, User $user)
+    {
+        $data = $request->except('_token');
+        $user->update($data);
 
-    //$user->save();
+        // $user->name = $data['name'];
+        // $user->email = $data['email'];
+        // $user->password = $data['password'];
+        // $user->gender = $data['gender'];
+        // $user->role = $data['role'];
+        // $user->address = $data['address'];
 
+        // $user->save();
 
-    return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index');
     }
-    public function delete(User $user){
-    $user = User::find($id);
-    $user->delete();
+    public function delete(User $user)
+    {
+        $user->delete();
 
-    return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index');
     }
 }

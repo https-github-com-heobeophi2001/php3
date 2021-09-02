@@ -1,4 +1,8 @@
 <?php
+
+const BASE_URL = "http://localhost:8000";
+const PUBLIC_PATH = BASE_URL . "public/";
+
     return [
         'user' => [
             'gender' =>[
@@ -19,6 +23,7 @@
                 'da_huy' => 5,
                 'chuyen_hoan' => 6,
             ]
-        ]
+            ],
+        
     ];
 ?>

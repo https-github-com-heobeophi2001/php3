@@ -8,24 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
-    protected $table = 'invoices';
-    protected $primaryKey ='id';
 
-    protected $fillable = [
-        'user.id',
+    protected $table = "invoices";
+    protected $primaryKey = "id";
+
+    protected $filltable = [
+        'user_id',
+        'number',
         'address',
         'total_price',
-        'number',
         'status',
     ];
-    public function invoiceDetails(){
+
+    public function invoiceDetails()
+    {
         return $this->hasMany(InvoiceDetail::class, 'invoice_id', 'id');
     }
     public function user(){
-        return $this->beLongsTo(User::class, 'user_id', 'id');
+        return $this->beLongsto(User::class, 'user_id', 'id');
     }
-    public function getTotalPriceAttribute(){
-        $newValue= $this->attributes['total_price'] . "VND";
+    //Accessor get{Attribute}Attribute
+    public function getTotalPriceAttribute() {
+        $newValue = $this->attributes['total_price'] . " VND";
+
         return $newValue;
     }
 }
